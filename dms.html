@@ -1,51 +1,56 @@
+<!-- dms.html -->
 <!DOCTYPE html>
 <html lang="en">
-    <!-- Include Firebase and Firebase Initialization -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="js/firebase.js" defer></script>
-<script src="js/script.js" defer></script>
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/styles.css">
+    <!-- ... (Same as before) -->
     <title>ConnectSphere - Direct Messages</title>
 </head>
 <body>
     <header>
         <div class="logo">ConnectSphere</div>
         <nav>
-            <a href="index.html"><i class="fas fa-home"></i></a>
-            <a href="signup.html"><i class="fas fa-user-plus"></i></a>
-            <a href="login.html"><i class="fas fa-sign-in-alt"></i></a>
-            <a href="uploads.html"><i class="fas fa-upload"></i></a>
+            <a href="index.html">Home</a>
+            <a href="signup.html">Sign Up</a>
+            <a href="login.html">Login</a>
+            <a href="uploads.html">Uploads</a>
         </nav>
     </header>
 
-    <main>
-        <h2>Direct Messages</h2>
-        <form id="dmForm">
-            <label for="dmUsername">Send DM to:</label>
-            <input type="text" id="dmUsername" required>
-            <label for="dmMessage">Message:</label>
-            <input type="text" id="dmMessage" required>
-            <button type="submit">Send Message</button>
-        </form>
+    <main class="dms-container">
+        <aside class="friends-list">
+            <h3>Your Friends</h3>
+            <ul id="friendsUl">
+                <!-- Friends will be dynamically populated here -->
+            </ul>
+            <form id="friendForm">
+                <label for="friendUsername">Add Friend:</label>
+                <input type="text" id="friendUsername" placeholder="Username" required>
+                <button type="submit">Add</button>
+            </form>
+        </aside>
 
-        <h3>Add Friend</h3>
-        <form id="friendForm">
-            <label for="friendUsername">Username:</label>
-            <input type="text" id="friendUsername" required>
-            <button type="submit">Add Friend</button>
-        </form>
+        <section class="chat-area">
+            <h3>Direct Messages</h3>
+            <div id="messages">
+                <!-- Messages will be dynamically populated here -->
+            </div>
+            <form id="dmForm">
+                <input type="text" id="dmUsername" placeholder="Friend's Username" required>
+                <input type="text" id="dmMessage" placeholder="Type your message..." required>
+                <button type="submit">Send</button>
+            </form>
+        </section>
     </main>
 
     <footer>
         <p>&copy; 2024 ConnectSphere</p>
     </footer>
 
-    <script src="js/script.js"></script>
+    <!-- Firebase SDKs and Initialization -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase.js" defer></script>
+    <script src="js/script.js" defer></script>
 </body>
 </html>
