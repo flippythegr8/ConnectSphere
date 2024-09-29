@@ -120,16 +120,16 @@ function sendDM(event) {
         });
 }
 
-// Add Friend Function
+// Function to send a friend request
 function addFriend(event) {
     event.preventDefault();
     const friendUsername = document.getElementById("friendUsername").value.trim();
 
-    console.log(`Adding friend: ${friendUsername}`);
+    console.log(`Sending friend request to: ${friendUsername}`);
 
     const currentUser = auth.currentUser;
     if (!currentUser) {
-        alert("You need to be logged in to add friends.");
+        alert("You need to be logged in to send friend requests.");
         return;
     }
 
@@ -146,19 +146,51 @@ function addFriend(event) {
             const friendDoc = querySnapshot.docs[0];
             const friendId = friendDoc.id;
 
-            // Update current user's friends list
-            return db.collection("users").doc(currentUser.uid).update({
-                friends: firebase.firestore.FieldValue.arrayUnion(friendId)
+            if (friendId === currentUser.uid) {
+                alert("You cannot send a friend request to yourself.");
+                throw new Error("Self friend request.");
+            }
+
+            // Check if already friends
+            return db.collection("users").doc(currentUser.uid).get();
+        })
+        .then((doc) => {
+            const userData = doc.data();
+            if (userData.friends.includes(friendId)) {
+                alert("You are already friends with this user.");
+                throw new Error("Already friends.");
+            }
+
+            // Check if a pending friend request exists
+            return db.collection("friendRequests")
+                .where("fromId", "==", currentUser.uid)
+                .where("toId", "==", friendId)
+                .where("status", "==", "pending")
+                .get();
+        })
+        .then((querySnapshot) => {
+            if (!querySnapshot.empty) {
+                alert("Friend request already sent and pending.");
+                throw new Error("Friend request pending.");
+            }
+
+            // Create a new friend request
+            return db.collection("friendRequests").add({
+                fromId: currentUser.uid,
+                toId: friendId,
+                status: "pending",
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
         })
         .then(() => {
-            alert("Friend added successfully!");
+            alert("Friend request sent successfully!");
             document.getElementById("friendForm").reset();
         })
         .catch((error) => {
-            console.error("Error adding friend:", error);
+            console.error("Error sending friend request:", error);
         });
 }
+
 // Function to fetch and display friends
 function fetchFriends() {
     const currentUser = auth.currentUser;
