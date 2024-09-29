@@ -1,123 +1,161 @@
 // script.js
 
-console.log("script.js is loaded."); // Confirm script load
-
-// Load users from localStorage or initialize to an empty array
-let users = JSON.parse(localStorage.getItem('users')) || [];
-let currentUser = null; // Keep track of the logged-in user
-
-// Function to handle user signup
-function signup(event) {
-    event.preventDefault();
-    const username = document.getElementById("signupUsername").value.trim();
-    const password = document.getElementById("signupPassword").value.trim();
-
-    console.log("Signing up user:", username, password); // Debugging statement
-
-    // Check if user already exists
-    if (users.some(user => user.username === username)) {
-        alert("Username already exists. Please choose another one.");
-        return;
-    }
-
-    // Add new user
-    users.push({ username, password, friends: [] });
-    localStorage.setItem('users', JSON.stringify(users)); // Save users to localStorage
-
-    // Debugging: Check localStorage directly
-    console.log("Users after signup:", users);
-
-    alert("Signup successful! You can now log in.");
-    window.location.href = "login.html"; // Redirect to login
-}
-
-// Function to handle user login
-function login(event) {
-    event.preventDefault();
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-
-    // Load users from localStorage to ensure we have the latest data
-    users = JSON.parse(localStorage.getItem('users')) || []; // Update users array
-
-    // Debugging: Log current users to console
-    console.log("Current Users:", users);
-
-    // Check user credentials
-    const user = users.find(user => user.username === username && user.password === password);
-    console.log("Attempting to log in with:", username, password);
-    
-    if (user) {
-        currentUser = user; // Set current user
-        alert(`Welcome, ${username}!`);
-        window.location.href = "dms.html"; // Redirect to DMs
-    } else {
-        alert("Invalid username or password. Please try again.");
-    }
-}
-
-// Function to send a DM
-function sendDM(event) {
-    event.preventDefault();
-    const recipientUsername = document.getElementById("dmUsername").value.trim();
-    const message = document.getElementById("dmMessage").value.trim();
-
-    // Check if recipient exists
-    const recipient = users.find(user => user.username === recipientUsername);
-    if (!recipient) {
-        alert("User not found.");
-        return;
-    }
-
-    // Here you would typically send the message to a server or store it
-    alert(`Message sent to ${recipientUsername}: ${message}`);
-}
-
-// Function to add a friend
-function addFriend(event) {
-    event.preventDefault();
-    const friendUsername = document.getElementById("friendUsername").value.trim();
-
-    const friend = users.find(user => user.username === friendUsername);
-    if (!friend) {
-        alert("User not found.");
-        return;
-    }
-
-    if (!currentUser.friends.includes(friendUsername)) {
-        currentUser.friends.push(friendUsername);
-        localStorage.setItem('users', JSON.stringify(users)); // Update localStorage with new friend
-        alert(`Added ${friendUsername} as a friend!`);
-    } else {
-        alert(`${friendUsername} is already your friend.`);
-    }
-}
-
-// Attach event listeners after DOM content is loaded
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM fully loaded and parsed."); // Confirm DOM loaded
+    console.log("DOM fully loaded and parsed.");
 
     const signupForm = document.getElementById("signupForm");
     if (signupForm) {
         signupForm.addEventListener("submit", signup);
-        console.log("Signup form listener attached."); // Debugging
+        console.log("Signup form listener attached.");
     }
 
     const loginForm = document.getElementById("loginForm");
     if (loginForm) {
         loginForm.addEventListener("submit", login);
-        console.log("Login form listener attached."); // Debugging
+        console.log("Login form listener attached.");
     }
 
     const dmForm = document.getElementById("dmForm");
     if (dmForm) {
         dmForm.addEventListener("submit", sendDM);
-        console.log("DM form listener attached."); // Debugging
+        console.log("DM form listener attached.");
     }
 
     const friendForm = document.getElementById("friendForm");
     if (friendForm) {
         friendForm.addEventListener("submit", addFriend);
-        console.log("Friend form listener attached."); // Debugging
+        console.log("Friend form listener attached.");
     }
 });
+
+// Signup Function
+function signup(event) {
+    event.preventDefault();
+    const username = document.getElementById("signupUsername").value.trim();
+    const password = document.getElementById("signupPassword").value.trim();
+
+    console.log("Signing up user:", username);
+
+    // Create user with Firebase Auth
+    auth.createUserWithEmailAndPassword(username + "@connectsphere.com", password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            console.log("User created:", user.uid);
+
+            // Save additional user data in Firestore
+            return db.collection("users").doc(user.uid).set({
+                username: username,
+                friends: [],
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        })
+        .then(() => {
+            alert("Signup successful! You can now log in.");
+            window.location.href = "login.html";
+        })
+        .catch((error) => {
+            console.error("Error during signup:", error);
+            alert(error.message);
+        });
+}
+
+// Login Function
+function login(event) {
+    event.preventDefault();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    console.log("Attempting to log in with:", username);
+
+    // Sign in with Firebase Auth
+    auth.signInWithEmailAndPassword(username + "@connectsphere.com", password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            console.log("User logged in:", user.uid);
+
+            // Redirect to DMs
+            window.location.href = "dms.html";
+        })
+        .catch((error) => {
+            console.error("Error during login:", error);
+            alert(error.message);
+        });
+}
+
+// Send DM Function
+function sendDM(event) {
+    event.preventDefault();
+    const recipientUsername = document.getElementById("dmUsername").value.trim();
+    const message = document.getElementById("dmMessage").value.trim();
+
+    console.log(`Sending DM to ${recipientUsername}: ${message}`);
+
+    // Find recipient by username
+    db.collection("users")
+        .where("username", "==", recipientUsername)
+        .get()
+        .then((querySnapshot) => {
+            if (querySnapshot.empty) {
+                alert("Recipient not found.");
+                throw new Error("Recipient not found.");
+            }
+
+            const recipientDoc = querySnapshot.docs[0];
+            const recipientId = recipientDoc.id;
+
+            // Save the message in Firestore
+            return db.collection("messages").add({
+                senderId: auth.currentUser.uid,
+                recipientId: recipientId,
+                message: message,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        })
+        .then(() => {
+            alert("Message sent successfully!");
+            document.getElementById("dmForm").reset();
+        })
+        .catch((error) => {
+            console.error("Error sending DM:", error);
+        });
+}
+
+// Add Friend Function
+function addFriend(event) {
+    event.preventDefault();
+    const friendUsername = document.getElementById("friendUsername").value.trim();
+
+    console.log(`Adding friend: ${friendUsername}`);
+
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+        alert("You need to be logged in to add friends.");
+        return;
+    }
+
+    // Find friend by username
+    db.collection("users")
+        .where("username", "==", friendUsername)
+        .get()
+        .then((querySnapshot) => {
+            if (querySnapshot.empty) {
+                alert("User not found.");
+                throw new Error("User not found.");
+            }
+
+            const friendDoc = querySnapshot.docs[0];
+            const friendId = friendDoc.id;
+
+            // Update current user's friends list
+            return db.collection("users").doc(currentUser.uid).update({
+                friends: firebase.firestore.FieldValue.arrayUnion(friendId)
+            });
+        })
+        .then(() => {
+            alert("Friend added successfully!");
+            document.getElementById("friendForm").reset();
+        })
+        .catch((error) => {
+            console.error("Error adding friend:", error);
+        });
+}
