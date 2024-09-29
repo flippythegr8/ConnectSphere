@@ -98,6 +98,49 @@ aside.friends-list button {
     cursor: pointer;
     transition: background-color 0.2s;
 }
+/* Add to styles.css */
+
+/* Friend Requests */
+aside.friends-list h3:nth-of-type(2) {
+    margin-top: 30px;
+}
+
+aside.friends-list ul#friendRequestsUl {
+    list-style: none;
+}
+
+aside.friends-list ul#friendRequestsUl li {
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #42454a;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+aside.friends-list ul#friendRequestsUl li .request-buttons button {
+    margin-left: 5px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 14px;
+}
+
+aside.friends-list ul#friendRequestsUl li .request-buttons button.accept {
+    background-color: #43b581; /* Green */
+}
+
+aside.friends-list ul#friendRequestsUl li .request-buttons button.decline {
+    background-color: #f04747; /* Red */
+}
+
+aside.friends-list ul#friendRequestsUl li .request-buttons button:hover {
+    opacity: 0.8;
+}
+
 
 aside.friends-list button:hover {
     background-color: #5b6eae;
