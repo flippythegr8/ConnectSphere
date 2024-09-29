@@ -1,94 +1,175 @@
-/* Reset some default styles */
+/* styles.css */
+
+/* General Styles */
 body, h1, h2, h3, p, a, form, input, button {
     margin: 0;
     padding: 0;
-    font-family: 'Arial', sans-serif; /* Clean font */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
 }
 
 body {
-    background-color: #f4f4f4; /* Light gray background */
-    color: #333; /* Darker text for readability */
+    background-color: #2f3136; /* Dark background similar to Discord */
+    color: #fff; /* White text */
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: flex-start; /* Content aligned at the top */
-    min-height: 100vh; /* Full height */
-    padding-top: 20px; /* Padding for spacing */
+    min-height: 100vh;
 }
 
 header {
-    background-color: #4c5c68; /* Darker header */
-    color: white;
-    width: 100%;
-    padding: 10px;
-    text-align: center;
+    background-color: #202225; /* Darker header */
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-nav {
-    margin: 10px 0;
+header .logo {
+    font-size: 24px;
+    font-weight: bold;
 }
 
 nav a {
-    color: white;
+    color: #b9bbbe; /* Light gray links */
     text-decoration: none;
-    margin: 0 15px;
-    font-size: 20px; /* Larger icon size */
+    margin-left: 15px;
+    font-size: 16px;
 }
 
 nav a:hover {
-    text-decoration: underline;
+    color: #fff; /* White on hover */
 }
 
-main {
-    background: white; /* White background for the main content */
+main.dms-container {
+    display: flex;
+    flex: 1;
+    height: calc(100vh - 60px); /* Adjust based on header height */
+}
+
+aside.friends-list {
+    background-color: #36393f; /* Sidebar background */
+    width: 250px;
     padding: 20px;
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    max-width: 400px; /* Limit the width */
-    width: 100%; /* Responsive width */
-    text-align: center; /* Center the text */
-    margin-top: 20px; /* Space from header */
+    box-sizing: border-box;
+    overflow-y: auto;
 }
 
-h1, h2, h3 {
+aside.friends-list h3 {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #4f545c;
+    padding-bottom: 5px;
+}
+
+aside.friends-list ul {
+    list-style: none;
+    margin-bottom: 20px;
+}
+
+aside.friends-list li {
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #42454a;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+aside.friends-list li:hover {
+    background-color: #4f545c;
+}
+
+aside.friends-list form {
+    display: flex;
+    flex-direction: column;
+}
+
+aside.friends-list input {
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+aside.friends-list button {
+    padding: 8px;
+    background-color: #7289da; /* Discord-like blue */
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+aside.friends-list button:hover {
+    background-color: #5b6eae;
+}
+
+section.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #36393f;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+section.chat-area h3 {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #4f545c;
+    padding-bottom: 5px;
+}
+
+#messages {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.message {
     margin-bottom: 15px;
 }
 
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px; /* Space between form elements */
-}
-
-label {
-    text-align: left;
+.message .sender {
+    font-weight: bold;
     margin-bottom: 5px;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="file"] {
+.message .text {
+    background-color: #40444b;
     padding: 10px;
     border-radius: 5px;
-    border: 1px solid #ccc;
-    width: 100%; /* Full width for inputs */
+    display: inline-block;
 }
 
-button {
-    background-color: #4c5c68; /* Button color */
-    color: white;
+section.chat-area form {
+    display: flex;
+}
+
+section.chat-area input[type="text"] {
+    flex: 1;
     padding: 10px;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s; /* Smooth transition */
+    border-radius: 4px;
+    margin-right: 10px;
+    background-color: #40444b;
+    color: #fff;
 }
 
-button:hover {
-    background-color: #3b4a54; /* Darker button on hover */
+section.chat-area button {
+    padding: 10px 20px;
+    background-color: #43b581; /* Discord-like green */
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+section.chat-area button:hover {
+    background-color: #3ba47c;
 }
 
 footer {
-    margin-top: 20px; /* Space above footer */
+    background-color: #202225;
+    text-align: center;
+    padding: 10px 0;
 }
